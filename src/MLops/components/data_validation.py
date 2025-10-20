@@ -9,24 +9,28 @@ class DataValidation:
 
     def validate_all_columns(self) -> bool:
         try:
-            validation_status = None
-
             data = pd.read_csv(self.config.unzip_data_dir)
             all_cols = list(data.columns)
 
             all_schema = self.config.all_schema
             missing_cols = []
             
+            # Check all columns first
             for col in all_cols:
                 if col not in all_schema:
-                    validation_status = False
-                    with open(self.config.STATUS_FILE, 'w') as f:
-                        f.write(f"Validation status: {validation_status}")
-
-                else:
-                    validation_status = True
-                    with open(self.config.STATUS_FILE, 'w') as f:
-                        f.write(f"Validation status: {validation_status}")
+                    missing_cols.append(col)
+            
+            # Set validation status based on whether any columns are missing
+            validation_status = len(missing_cols) == 0
+            
+            # Write status file once at the end
+            with open(self.config.STATUS_FILE, 'w') as f:
+                f.write(f"Validation status: {validation_status}")
+            
+            if missing_cols:
+                logger.error(f"Missing columns: {missing_cols}")
+            else:
+                logger.info("All columns are present in the schema")
 
             return validation_status
         except Exception as e:

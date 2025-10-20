@@ -14,3 +14,10 @@ class DataValidationConfig:
     STATUS_FILE: Path
     unzip_data_dir: Path
     all_schema: dict
+
+@dataclass(frozen=True)
+class DataTransformationConfig:
+    root_dir: Path
+    data_path: Path
+    test_size: float
+    random_state: int

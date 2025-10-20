@@ -1,6 +1,6 @@
 from MLops.constants import *
 from MLops.utils.common import read_yaml, create_directories
-from MLops.entity.config_entity import (DataIngestionConfig, DataValidationConfig)
+from MLops.entity.config_entity import (DataIngestionConfig, DataValidationConfig, DataTransformationConfig)
 
 class ConfigurationManager:
     def __init__(
@@ -37,6 +37,21 @@ class ConfigurationManager:
             root_dir=config.root_dir,
             STATUS_FILE=config.STATUS_FILE,
             unzip_data_dir=config.unzip_data_dir,
-            all_schema=self.schema
+            all_schema=self.schema.COLUMNS
         )
         return data_validation_config
+
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+        params = self.params.TrainingPipelineParams.DataTransformation
+
+        create_directories([config.root_dir])
+        
+        data_transformation_config = DataTransformationConfig(
+            root_dir=config.root_dir,
+            data_path=config.data_path,
+            test_size=params.test_size,
+            random_state=params.random_state
+        )
+        
+        return data_transformation_config
